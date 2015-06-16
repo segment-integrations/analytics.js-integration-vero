@@ -120,12 +120,12 @@ describe('Vero', function() {
 
       it('should send an event', function() {
         analytics.track('event');
-        analytics.called(window._veroq.push, ['track', 'event', {}]);
+        analytics.called(window._veroq.push, ['track', 'event', {}, { source: 'segment' }]);
       });
 
       it('should send an event and properties', function() {
         analytics.track('event', { property: true });
-        analytics.called(window._veroq.push, ['track', 'event', { property: true }]);
+        analytics.called(window._veroq.push, ['track', 'event', { property: true }, { source: 'segment' }]);
       });
 
       it('should send an unsubscribe event in the correct format', function() {
