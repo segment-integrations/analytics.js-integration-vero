@@ -82,14 +82,23 @@ describe('Vero', function() {
         analytics.stub(window._veroq, 'push');
       });
 
-      it('shouldnt send just an id', function() {
-        analytics.identify('id');
-        analytics.didNotCall(window._veroq.push);
-      });
-
       it('shouldnt send without an id', function() {
         analytics.identify({ trait: true });
         analytics.didNotCall(window._veroq.push);
+      });
+
+      it('should send with just an id', function() {
+        analytics.identify('id');
+        analytics.called(window._veroq.push, ['user', {
+          id: 'id'
+        }]);
+      });
+
+      it('should send with just an email', function() {
+        analytics.identify(null, {email: 'name@example.com'});
+        analytics.called(window._veroq.push, ['user', {
+          email: 'name@example.com'
+        }]);
       });
 
       it('should send an id and email', function() {
