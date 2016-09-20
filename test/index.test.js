@@ -139,8 +139,10 @@ describe('Vero', function() {
       });
 
       it('should send an unsubscribe event in the correct format', function() {
-        analytics.track('unsubscribe', { id: 'id' });
-        analytics.called(window._veroq.push, ['unsubscribe', { id: 'id' }]);
+        analytics.identify('id');
+        window._veroq.push.reset();
+        analytics.track('unsubscribe');
+        analytics.called(window._veroq.push, ['unsubscribe', 'id']);
       });
     });
 
@@ -157,6 +159,26 @@ describe('Vero', function() {
       it('should send a new and old id', function() {
         analytics.alias('new', 'old');
         analytics.called(window._veroq.push, ['reidentify', 'new', 'old']);
+      });
+    });
+
+    describe('#group', function() {
+      beforeEach(function() {
+        analytics.stub(window._veroq, 'push');
+      });
+
+      it('should send an id and group traits', function() {
+        analytics.identify('id');
+        window._veroq.push.reset();
+        analytics.group('group', { number: 4 });
+        analytics.called(window._veroq.push, ['user', { id: 'id', group: { id: 'group', number: 4 } }]);
+      });
+
+      it('should send an email and group traits', function() {
+        analytics.identify({ email: 'e@ma.il' });
+        window._veroq.push.reset();
+        analytics.group('group', { number: 4 });
+        analytics.called(window._veroq.push, ['user', { email: 'e@ma.il', group: { id: 'group', number: 4 } }]);
       });
     });
   });
