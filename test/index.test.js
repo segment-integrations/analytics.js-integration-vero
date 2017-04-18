@@ -159,5 +159,68 @@ describe('Vero', function() {
         analytics.called(window._veroq.push, ['reidentify', 'new', 'old']);
       });
     });
+
+    describe('#addOrRemoveTags', function() {
+      beforeEach(function() {
+        analytics.stub(window._veroq, 'push');
+      });
+
+      it('should add tags if they are present as integration options', function() {
+        analytics.track('event', {}, { 
+          integrations: { 
+            Vero: { 
+              tags: { 
+                action: 'add',
+                values: ['yoloer'] 
+              } 
+            } 
+          } 
+        });
+        analytics.assert.deepEqual(window._veroq.push.args[1][0], ['tags', { add: ['yoloer'] }]);
+      });
+
+      it('should remove tags if they are present as integration options', function() {
+        analytics.track('event', {}, {
+          integrations: {
+            Vero: { 
+              tags: { 
+                action: 'remove',
+                values: ['yoloer'] 
+              }
+            }
+          }
+        });
+        analytics.assert.deepEqual(window._veroq.push.args[1][0], ['tags', { remove: ['yoloer'] }]);
+      });
+
+      it('should work for .identify calls', function() {
+        analytics.identify('user-id', {}, {
+          integrations: {
+            Vero: { 
+              tags: { 
+                action: 'add',
+                values: ['yoloer'] 
+              }
+            }
+          }
+        });
+        analytics.assert.deepEqual(window._veroq.push.args[1][0], ['tags', { add: ['yoloer'] }]);
+      });
+
+      it('should add an id to the payload if one is present in the options object', function() {
+        analytics.identify('user-id', {}, {
+          integrations: {
+            Vero: { 
+              tags: { 
+                id: 'other-user-id',
+                action: 'add',
+                values: ['yoloer'] 
+              }
+            }
+          }
+        });
+        analytics.assert.deepEqual(window._veroq.push.args[1][0], ['tags', { id: 'other-user-id', add: ['yoloer'] }]);
+      });
+    });
   });
 });
